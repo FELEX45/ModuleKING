@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${module.manufacturer || ''}</td>
                 <td>${module.chipDecoder || ''}</td>
                 <td>${module.fullName || ''}</td>
+                <td>${module.maps || ''}</td>
                 <td>${module.screenSize || ''}</td>
                 <td>${module.orderManager || ''}</td>
                 <td>${module.note || ''}</td>
-                <td>${module.maps || ''}</td>
                 <td>
                     <button class="edit-btn" data-id="${module.id}">Редактировать</button>
                     <button class="delete-btn" data-id="${module.id}">Удалить</button>
