@@ -70,8 +70,8 @@ h1 {
 
 /* Обёртка для таблицы для горизонтальной прокрутки */
 .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto; /* Горизонтальная прокрутка */
+    -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
     background-color: #1e1e1e; /* Темнее фон контейнера таблицы */
     border-radius: 10px; /* Скругленные углы контейнера */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Большая тень для контейнера */
@@ -79,17 +79,18 @@ h1 {
 }
 
 table {
-    width: 100%;
+    width: 100%; /* Таблица занимает всю доступную ширину */
     border-collapse: collapse;
-    min-width: 900px; /* Минимальная ширина для прокрутки */
+    /* min-width: 800px; Удаляем фиксированную минимальную ширину */
     background-color: #1e1e1e; /* Фон таблицы */
 }
 
 table th,
 table td {
     border: 1px solid #333; /* Более мягкая граница */
-    padding: 12px 15px;
+    padding: 8px; /* Уменьшаем отступы для ячеек */
     text-align: left;
+    font-size: 12px; /* Уменьшаем размер шрифта */
 }
 
 table th {
@@ -226,12 +227,12 @@ table .delete-btn {
     background-color: #5a209e; /* Темнее фиолетовый */
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 8px; /* Меньшие отступы для кнопок */
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 0.85em;
-    margin: 0 4px;
+    font-size: 0.75em; /* Меньший размер шрифта */
+    margin: 0 2px; /* Меньшие отступы между кнопками */
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
