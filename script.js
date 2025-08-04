@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const moduleInstanceForm = document.getElementById('module-instance-form');
     const modulesTableBody = document.querySelector('#modules-table tbody');
     const moduleTypeSelect = document.getElementById('module-type-select');
+    const selectedModuleTypeInfo = document.getElementById('selected-module-type-info');
+    const infoPixel = document.getElementById('info-pixel');
+    const infoManufacturer = document.getElementById('info-manufacturer');
+    const infoChipDecoder = document.getElementById('info-chip-decoder');
+    const infoFullName = document.getElementById('info-full-name');
 
     // Элементы для модуля типа (новая форма)
     const moduleTypeModal = document.getElementById('add-edit-module-type-modal');
@@ -45,6 +50,24 @@ document.addEventListener('DOMContentLoaded', () => {
             option.textContent = type.fullName || `${type.manufacturer} ${type.pixel}`; // Отображаем полное название или комбинацию
             moduleTypeSelect.appendChild(option);
         });
+    }
+
+    // Отображение информации о выбранном типе модуля
+    function displaySelectedModuleTypeInfo(moduleTypeId) {
+        const selectedType = moduleTypes.find(type => type.id === moduleTypeId);
+        if (selectedType) {
+            infoPixel.textContent = selectedType.pixel || '';
+            infoManufacturer.textContent = selectedType.manufacturer || '';
+            infoChipDecoder.textContent = selectedType.chipDecoder || '';
+            infoFullName.textContent = selectedType.fullName || '';
+            selectedModuleTypeInfo.style.display = 'block';
+        } else {
+            infoPixel.textContent = '';
+            infoManufacturer.textContent = '';
+            infoChipDecoder.textContent = '';
+            infoFullName.textContent = '';
+            selectedModuleTypeInfo.style.display = 'none';
+        }
     }
 
     // Загрузка установок модулей
@@ -137,11 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Обработчики событий для модального окна УСТАНОВКИ модуля ---
 
+    // Обновление списка типов при открытии модалки установки
     addInstanceBtn.addEventListener('click', () => {
         moduleInstanceModal.style.display = 'block';
         moduleInstanceForm.reset();
         editingModuleInstanceId = null;
         populateModuleTypeSelect(); // Убедимся, что список типов актуален
+        displaySelectedModuleTypeInfo(null); // Очищаем информацию о типе при открытии новой формы
     });
 
     closeModalInstanceBtn.addEventListener('click', () => {
@@ -196,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             moduleInstanceModal.style.display = 'block';
             populateModuleTypeSelect(); // Обновляем список типов при открытии модалки
+            displaySelectedModuleTypeInfo(moduleToEdit.moduleTypeId); // Отображаем информацию о типе
 
         } else if (event.target.classList.contains('delete-instance-btn')) {
             const idToDelete = event.target.dataset.id;
@@ -244,6 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (searchInput.value === '') {
             loadModules(); // Перезагружаем все модули, если строка поиска пуста
         }
+    });
+
+    // Слушатель для изменения выбранного типа модуля
+    moduleTypeSelect.addEventListener('change', (event) => {
+        displaySelectedModuleTypeInfo(event.target.value);
     });
 
     // Инициализация при загрузке страницы: загружаем типы модулей
