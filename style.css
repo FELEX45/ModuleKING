@@ -258,6 +258,25 @@ table .delete-btn:hover {
     transform: translateY(-1px);
 }
 
+/* Стили для кнопок выбора типа модуля в модальном окне */
+.select-type-btn {
+    background-color: #4CAF50; /* Зеленый цвет для кнопки выбора */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.8em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.select-type-btn:hover {
+    background-color: #45a049;
+}
+
 /* Анимации */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -277,59 +296,80 @@ table .delete-btn:hover {
     }
 
     h1 {
-        font-size: 24px;
+        font-size: 2em;
     }
 
     .controls {
-        flex-direction: column; /* Элементы управления в столбец */
-        align-items: center;
-        gap: 8px; /* Уменьшаем отступ между элементами */
+        flex-direction: column;
+        align-items: stretch; /* Растягиваем элементы на всю ширину */
+        gap: 10px;
     }
 
     .controls button,
     .controls input[type="text"] {
-        width: 90%; /* Занимают почти всю ширину */
-        margin: 5px 0; /* Уточняем отступы */
+        width: 100%; /* Занимают всю доступную ширину */
+        margin: 0; /* Убираем лишние отступы */
     }
 
-    /* Адаптивная таблица */
+    /* Обёртка для таблицы для горизонтальной прокрутки */
     .table-container {
-        overflow-x: auto; /* Горизонтальная прокрутка */
-        -webkit-overflow-scrolling: touch; /* Плавная прокрутка на iOS */
+        padding: 10px;
     }
 
     table {
-        width: 100%; /* Таблица занимает всю доступную ширину */
-        /* min-width: 800px; - Удаляем это или делаем его меньше, если все еще проблема */
-        min-width: 600px; /* Попробуем меньшую минимальную ширину для прокрутки */
+        min-width: 650px; /* Немного уменьшим минимальную ширину таблицы для лучшей адаптации */
     }
 
     table th,
     table td {
-        padding: 6px 8px; /* Уменьшаем отступы для ячеек */
-        font-size: 10px; /* Еще уменьшаем размер шрифта */
-        white-space: normal; /* Разрешаем перенос текста в ячейках */
+        padding: 8px 10px; /* Уменьшаем отступы для ячеек */
+        font-size: 0.8em; /* Немного уменьшаем размер шрифта */
+        white-space: normal; /* Разрешаем перенос текста */
     }
 
     /* Уточняем стили для кнопок действий в таблице */
     table .edit-btn,
     table .delete-btn {
-        padding: 4px 6px; /* Еще меньшие отступы для кнопок */
-        font-size: 0.7em; /* Еще меньший размер шрифта */
-        margin: 0 1px; /* Еще меньшие отступы между кнопками */
+        padding: 5px 8px; /* Еще меньшие отступы для кнопок */
+        font-size: 0.75em; /* Еще меньший размер шрифта */
+        margin: 2px; /* Небольшой отступ между кнопками */
     }
 
     .modal-content {
         width: 95%;
-        margin: 5% auto; /* Центрируем модальное окно */
-        padding: 15px;
+        margin: 20px auto; /* Больший отступ сверху/снизу на мобильных */
+        padding: 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.8em;
     }
 
     .modal-content form input[type="text"],
     .modal-content form input[type="date"],
-    .modal-content form textarea {
-        width: calc(100% - 18px); /* Корректировка ширины полей ввода */
-        padding: 10px; /* Уменьшаем отступы в полях ввода */
+    .modal-content form textarea,
+    .modal-content form select {
+        width: 100%; /* Занимают всю ширину */
+        padding: 10px;
         margin-bottom: 15px;
+    }
+
+    /* Стили для новых элементов выбора типа модуля */
+    #selected-module-type-display {
+        width: calc(100% - 105px); /* Корректировка ширины поля */
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    #select-module-type-btn {
+        width: 100px; /* Фиксированная ширина кнопки */
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
+    #selected-module-type-info {
+        margin-top: 10px;
+        padding: 8px;
+        font-size: 0.9em;
     }
 } 
