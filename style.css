@@ -277,6 +277,46 @@ table .delete-btn:hover {
     background-color: #45a049;
 }
 
+/* Стили для кнопок главного меню */
+.menu-buttons button {
+    background-color: #7b2cbf; /* Основной фиолетовый */
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: block; /* Каждая кнопка на новой строке */
+    width: 100%; /* Занимают всю ширину родителя */
+    max-width: 300px; /* Максимальная ширина для эстетики */
+    margin: 15px auto; /* Центрируем кнопки и добавляем отступы */
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 10px; /* Более скругленные кнопки */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Тень для кнопок */
+}
+
+.menu-buttons button:hover {
+    background-color: #924edb; /* Светлее при наведении */
+    transform: translateY(-3px); /* Небольшой подъем */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Увеличенная тень */
+}
+
+.menu-buttons button:active {
+    transform: translateY(0); /* Возвращение при нажатии */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Меньшая тень при нажатии */
+}
+
+/* Центрирование главного меню */
+#main-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Занимает почти всю высоту экрана */
+    text-align: center;
+}
+
 /* Анимации */
 @keyframes fadeIn {
     from { opacity: 0; }
