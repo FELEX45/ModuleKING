@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${module.screenSize || ''}</td>
                 <td>${module.orderManager || ''}</td>
                 <td>${module.note || ''}</td>
+                <td>${module.maps || ''}</td>
                 <td>
                     <button class="edit-btn" data-id="${module.id}">Редактировать</button>
                     <button class="delete-btn" data-id="${module.id}">Удалить</button>
@@ -70,7 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fullName: document.getElementById('full-name').value,
             screenSize: document.getElementById('screen-size').value,
             orderManager: document.getElementById('order-manager').value,
-            note: document.getElementById('note').value
+            note: document.getElementById('note').value,
+            maps: document.getElementById('maps').value
         };
 
         console.log('Данные из формы:', newModuleData);
@@ -102,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('screen-size').value = moduleToEdit.screenSize || '';
             document.getElementById('order-manager').value = moduleToEdit.orderManager || '';
             document.getElementById('note').value = moduleToEdit.note || '';
+            document.getElementById('maps').value = moduleToEdit.maps || '';
 
             modal.style.display = 'block';
         } else if (event.target.classList.contains('delete-btn')) {
