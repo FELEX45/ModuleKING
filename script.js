@@ -73,9 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
             note: document.getElementById('note').value
         };
 
+        console.log('Данные из формы:', newModuleData);
+
         if (editingModuleId) {
+            console.log('Обновление документа с ID:', editingModuleId, newModuleData);
             await db.collection('modules').doc(editingModuleId).update(newModuleData);
         } else {
+            console.log('Добавление нового документа:', newModuleData);
             await db.collection('modules').add(newModuleData);
         }
         
