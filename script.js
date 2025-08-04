@@ -7,37 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const moduleForm = document.getElementById('module-form');
     const modulesTableBody = document.querySelector('#modules-table tbody');
 
-    let modules = JSON.parse(localStorage.getItem('modules')) || [];
-    let editingIndex = -1;
+    let editingModuleId = null; // Для хранения ID редактируемого документа Firebase
+
+    // Асинхронная функция для загрузки модулей
+    async function loadModules() {
+        const snapshot = await db.collection('modules').get();
+        const modules = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        renderTable(modules);
+        return modules; // Возвращаем для поиска
+    }
 
     function renderTable(data) {
         modulesTableBody.innerHTML = '';
-        data.forEach((module, index) => {
+        data.forEach(module => {
             const row = modulesTableBody.insertRow();
             row.innerHTML = `
-                <td>${module.date}</td>
-                <td>${module.object}</td>
-                <td>${module.pixel}</td>
-                <td>${module.manufacturer}</td>
-                <td>${module.chipDecoder}</td>
-                <td>${module.fullName}</td>
-                <td>${module.note}</td>
+                <td>${module.date || ''}</td>
+                <td>${module.object || ''}</td>
+                <td>${module.pixel || ''}</td>
+                <td>${module.manufacturer || ''}</td>
+                <td>${module.chipDecoder || ''}</td>
+                <td>${module.fullName || ''}</td>
+                <td>${module.note || ''}</td>
                 <td>
-                    <button class="edit-btn" data-index="${index}">Редактировать</button>
-                    <button class="delete-btn" data-index="${index}">Удалить</button>
+                    <button class="edit-btn" data-id="${module.id}">Редактировать</button>
+                    <button class="delete-btn" data-id="${module.id}">Удалить</button>
                 </td>
             `;
         });
     }
 
-    function saveModules() {
-        localStorage.setItem('modules', JSON.stringify(modules));
-    }
-
     addBtn.addEventListener('click', () => {
         modal.style.display = 'block';
         moduleForm.reset();
-        editingIndex = -1;
+        editingModuleId = null;
     });
 
     closeModalBtn.addEventListener('click', () => {
@@ -50,10 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    moduleForm.addEventListener('submit', (event) => {
+    moduleForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const newModule = {
+        const newModuleData = {
             date: document.getElementById('date').value,
             object: document.getElementById('object').value,
             pixel: document.getElementById('pixel').value,
@@ -63,50 +69,50 @@ document.addEventListener('DOMContentLoaded', () => {
             note: document.getElementById('note').value
         };
 
-        if (editingIndex === -1) {
-            modules.push(newModule);
+        if (editingModuleId) {
+            await db.collection('modules').doc(editingModuleId).update(newModuleData);
         } else {
-            modules[editingIndex] = newModule;
+            await db.collection('modules').add(newModuleData);
         }
-
-        saveModules();
-        renderTable(modules);
+        
         modal.style.display = 'none';
+        loadModules(); // Перезагружаем данные после сохранения
     });
 
-    modulesTableBody.addEventListener('click', (event) => {
+    modulesTableBody.addEventListener('click', async (event) => {
         if (event.target.classList.contains('edit-btn')) {
-            editingIndex = parseInt(event.target.dataset.index);
-            const moduleToEdit = modules[editingIndex];
+            editingModuleId = event.target.dataset.id;
+            const doc = await db.collection('modules').doc(editingModuleId).get();
+            const moduleToEdit = doc.data();
 
-            document.getElementById('date').value = moduleToEdit.date;
-            document.getElementById('object').value = moduleToEdit.object;
-            document.getElementById('pixel').value = moduleToEdit.pixel;
-            document.getElementById('manufacturer').value = moduleToEdit.manufacturer;
-            document.getElementById('chip-decoder').value = moduleToEdit.chipDecoder;
-            document.getElementById('full-name').value = moduleToEdit.fullName;
-            document.getElementById('note').value = moduleToEdit.note;
+            document.getElementById('date').value = moduleToEdit.date || '';
+            document.getElementById('object').value = moduleToEdit.object || '';
+            document.getElementById('pixel').value = moduleToEdit.pixel || '';
+            document.getElementById('manufacturer').value = moduleToEdit.manufacturer || '';
+            document.getElementById('chip-decoder').value = moduleToEdit.chipDecoder || '';
+            document.getElementById('full-name').value = moduleToEdit.fullName || '';
+            document.getElementById('note').value = moduleToEdit.note || '';
 
             modal.style.display = 'block';
         } else if (event.target.classList.contains('delete-btn')) {
-            const indexToDelete = parseInt(event.target.dataset.index);
+            const idToDelete = event.target.dataset.id;
             if (confirm('Вы уверены, что хотите удалить эту запись?')) {
-                modules.splice(indexToDelete, 1);
-                saveModules();
-                renderTable(modules);
+                await db.collection('modules').doc(idToDelete).delete();
+                loadModules(); // Перезагружаем данные после удаления
             }
         }
     });
 
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', async () => {
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredModules = modules.filter(module => {
+        const allModules = await loadModules(); // Получаем все модули для поиска
+        const filteredModules = allModules.filter(module => {
             for (const key in module) {
                 if (key === 'date') {
                     if (module[key].includes(searchTerm)) {
                         return true;
                     }
-                    const [year, month, day] = module[key].split('-');
+                    const [year, month, day] = (module[key] || '').split('-');
                     if (searchTerm.length === 7 && searchTerm === `${year}-${month}` || searchTerm.length === 10 && searchTerm === `${year}-${month}-${day}`) {
                         return true;
                     }
@@ -121,9 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchInput.addEventListener('keyup', () => {
         if (searchInput.value === '') {
-            renderTable(modules);
+            loadModules(); // Перезагружаем все модули, если строка поиска пуста
         }
     });
 
-    renderTable(modules);
+    loadModules(); // Начальная загрузка данных при запуске
 }); 
