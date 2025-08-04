@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление типами модулей</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Управление типами светодиодных модулей</h1>
+    <div class="controls">
+        <button id="add-module-type-btn">Добавить новый тип модуля</button>
+        <button id="back-to-main-menu-btn">Главное меню</button>
+    </div>
+
+    <div class="table-container">
+        <table id="module-types-table">
+            <thead>
+                <tr>
+                    <th>Пиксель модуля</th>
+                    <th>Производитель</th>
+                    <th>Чип/Декодер</th>
+                    <th>Полное название</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Данные будут вставляться сюда JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="add-edit-module-type-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Добавить/Редактировать Тип Модуля</h2>
+            <form id="module-type-form">
+                <label for="pixel-type">Пиксель модуля:</label>
+                <input type="text" id="pixel-type" required>
+
+                <label for="manufacturer-type">Производитель модуля:</label>
+                <input type="text" id="manufacturer-type" required>
+
+                <label for="chip-decoder-type">Чип/Декодер:</label>
+                <input type="text" id="chip-decoder-type">
+
+                <label for="full-name-type">Полное название модуля:</label>
+                <input type="text" id="full-name-type">
+
+                <button type="submit">Сохранить тип</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAnBhHkh9SOIp5LBWenxnDl8AgdCAdd4Bg",
+        authDomain: "moduleking-app.firebaseapp.com",
+        projectId: "moduleking-app",
+        storageBucket: "moduleking-app.firebasestorage.app",
+        messagingSenderId: "822341750781",
+        appId: "1:822341750781:web:6a8400f5bfce4b9736d394",
+        measurementId: "G-E3JLXKWJ6C"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+    <script src="module_types.js"></script>
+</body>
+</html> 

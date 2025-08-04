@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Утилита учета светодиодных модулей</title>
+    <title>Главное меню</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,121 +11,9 @@
         <h1>Учет светодиодных модулей</h1>
         <div class="menu-buttons">
             <button id="open-accounting-btn">Учет светодиодных модулей</button>
-            <button id="open-module-type-form-btn">Добавить модуль (тип)</button>
+            <button id="open-module-type-form-btn">Управление типами модулей</button>
         </div>
     </div>
-
-    <div id="accounting-section" class="hidden">
-        <h1>Учет светодиодных модулей</h1>
-        <div class="controls">
-            <button id="add-btn">Добавить (установка)</button>
-            <input type="text" id="search-input" placeholder="Поиск...">
-            <button id="search-btn">Поиск</button>
-        </div>
-        <div class="table-container">
-            <table id="modules-table">
-                <thead>
-                    <tr>
-                        <th>Дата</th>
-                        <th>Объект</th>
-                        <th>Пиксель модуля</th>
-                        <th>Производитель</th>
-                        <th>Чип/Декодер</th>
-                        <th>Полное название</th>
-                        <th>Карты</th>
-                        <th>Размер экрана</th>
-                        <th>Менеджер заказа</th>
-                        <th>Примечание</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Данные будут вставляться сюда JS -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="add-edit-module-instance-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Добавить/Редактировать Установку Модуля</h2>
-            <form id="module-instance-form">
-                <label for="date">Дата:</label>
-                <input type="date" id="date" required>
-
-                <label for="object">Объект:</label>
-                <input type="text" id="object">
-
-                <label for="module-type-select">Тип модуля:</label>
-                <select id="module-type-select" required>
-                    <option value="">Выберите тип модуля</option>
-                    <!-- Опции будут загружаться JS -->
-                </select>
-
-                <div id="selected-module-type-info" style="margin-top: 15px; padding: 10px; border: 1px solid #444; border-radius: 8px; background-color: #1a1a1a;">
-                    <p><strong>Пиксель:</strong> <span id="info-pixel"></span></p>
-                    <p><strong>Производитель:</strong> <span id="info-manufacturer"></span></p>
-                    <p><strong>Чип/Декодер:</strong> <span id="info-chip-decoder"></span></p>
-                    <p><strong>Полное название:</strong> <span id="info-full-name"></span></p>
-                </div>
-
-                <label for="screen-size">Размер экрана:</label>
-                <input type="text" id="screen-size">
-
-                <label for="order-manager">Менеджер заказа:</label>
-                <input type="text" id="order-manager">
-
-                <label for="maps">Карты:</label>
-                <input type="text" id="maps">
-
-                <label for="note">Примечание:</label>
-                <textarea id="note"></textarea>
-
-                <button type="submit">Сохранить</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="add-edit-module-type-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button-type">&times;</span>
-            <h2>Добавить/Редактировать Тип Модуля</h2>
-            <form id="module-type-form">
-                <label for="pixel-type">Пиксель модуля:</label>
-                <input type="text" id="pixel-type" required>
-
-                <label for="manufacturer-type">Производитель модуля:</label>
-                <input type="text" id="manufacturer-type" required>
-
-                <label for="chip-decoder-type">Чип/Декодер:</label>
-                <input type="text" id="chip-decoder-type">
-
-                <label for="full-name-type">Полное название модуля:</label>
-                <input type="text" id="full-name-type">
-
-                <button type="submit">Сохранить тип</button>
-            </form>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyAnBhHkh9SOIp5LBWenxnDl8AgdCAdd4Bg",
-        authDomain: "moduleking-app.firebaseapp.com",
-        projectId: "moduleking-app",
-        storageBucket: "moduleking-app.firebasestorage.app",
-        messagingSenderId: "822341750781",
-        appId: "1:822341750781:web:6a8400f5bfce4b9736d394",
-        measurementId: "G-E3JLXKWJ6C"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-    </script>
     <script src="script.js"></script>
 </body>
 </html> 
