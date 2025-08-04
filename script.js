@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${module.manufacturer || ''}</td>
                 <td>${module.chipDecoder || ''}</td>
                 <td>${module.fullName || ''}</td>
+                <td>${module.screenSize || ''}</td>
+                <td>${module.orderManager || ''}</td>
                 <td>${module.note || ''}</td>
                 <td>
                     <button class="edit-btn" data-id="${module.id}">Редактировать</button>
@@ -66,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             manufacturer: document.getElementById('manufacturer').value,
             chipDecoder: document.getElementById('chip-decoder').value,
             fullName: document.getElementById('full-name').value,
+            screenSize: document.getElementById('screen-size').value,
+            orderManager: document.getElementById('order-manager').value,
             note: document.getElementById('note').value
         };
 
@@ -91,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('manufacturer').value = moduleToEdit.manufacturer || '';
             document.getElementById('chip-decoder').value = moduleToEdit.chipDecoder || '';
             document.getElementById('full-name').value = moduleToEdit.fullName || '';
+            document.getElementById('screen-size').value = moduleToEdit.screenSize || '';
+            document.getElementById('order-manager').value = moduleToEdit.orderManager || '';
             document.getElementById('note').value = moduleToEdit.note || '';
 
             modal.style.display = 'block';
