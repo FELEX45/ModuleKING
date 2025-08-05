@@ -92,22 +92,39 @@ document.addEventListener('DOMContentLoaded', () => {
         let photoURL = document.getElementById('photo-type-preview').src;
 
         if (file) {
-            const filePath = `module_type_photos/${Date.now()}_${file.name}`;
-            const fileRef = storage.ref().child(filePath);
-            await fileRef.put(file);
-            photoURL = await fileRef.getDownloadURL();
+            console.log(`Исходный размер файла: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+            
+            const options = {
+                maxSizeMB: 0.5, // Максимальный размер файла 0.5MB
+                maxWidthOrHeight: 1280, // Максимальная ширина или высота
+                useWebWorker: true
+            };
 
-            if (editingModuleTypeId) {
-                const doc = await db.collection('module_types').doc(editingModuleTypeId).get();
-                const oldPhotoURL = doc.data().photoURL;
-                if (oldPhotoURL) {
-                    try {
-                        const oldPhotoRef = storage.refFromURL(oldPhotoURL);
-                        await oldPhotoRef.delete();
-                    } catch (error) {
-                        console.error("Не удалось удалить старое фото: ", error);
+            try {
+                const compressedFile = await imageCompression(file, options);
+                console.log(`Сжатый размер файла: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+
+                const filePath = `module_type_photos/${Date.now()}_${compressedFile.name}`;
+                const fileRef = storage.ref().child(filePath);
+                await fileRef.put(compressedFile);
+                photoURL = await fileRef.getDownloadURL();
+
+                if (editingModuleTypeId) {
+                    const doc = await db.collection('module_types').doc(editingModuleTypeId).get();
+                    const oldPhotoURL = doc.data().photoURL;
+                    if (oldPhotoURL && oldPhotoURL !== photoURL) { // Удаляем, только если URL изменился
+                        try {
+                            const oldPhotoRef = storage.refFromURL(oldPhotoURL);
+                            await oldPhotoRef.delete();
+                        } catch (error) {
+                            console.error("Не удалось удалить старое фото: ", error);
+                        }
                     }
                 }
+            } catch (error) {
+                console.error("Ошибка при сжатии или загрузке изображения:", error);
+                alert("Не удалось обработать изображение. Попробуйте другое.");
+                return; // Прерываем выполнение, чтобы не сохранять запись без фото
             }
         }
 
