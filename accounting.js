@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const moduleInstanceForm = document.getElementById('module-instance-form');
     const modulesTableBody = document.querySelector('#modules-table tbody');
 
+    // Элементы для фото
+    const modulePhotoInput = document.getElementById('module-photo');
+    const photoPreview = document.getElementById('photo-preview');
+
     // Новые элементы для выбора типа модуля
     const selectedModuleTypeDisplay = document.getElementById('selected-module-type-display');
     const selectedModuleTypeId = document.getElementById('selected-module-type-id');
@@ -102,6 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
         modulesTableBody.innerHTML = '';
         data.forEach(module => {
             const row = modulesTableBody.insertRow();
+
+            // Создаем HTML для фото, если оно есть
+            const photoHtml = module.photoURL 
+                ? `<img src="${module.photoURL}" alt="Фото модуля" style="width: 100px; height: auto; cursor: pointer;" onclick="window.open('${module.photoURL}')">` 
+                : 'Нет фото';
+
             row.innerHTML = `
                 <td>${module.date || ''}</td>
                 <td>${module.object || ''}</td>
@@ -113,15 +123,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${module.screenSize || ''}</td>
                 <td>${module.orderManager || ''}</td>
                 <td>${module.note || ''}</td>
+                <td>${photoHtml}</td>
                 <td>
                     <button class="edit-instance-btn" data-id="${module.id}">Редактировать</button>
-                    <button class="delete-instance-btn" data-id="${module.id}">Удалить</button>
+                    <button class="delete-instance-btn" data-id="${module.id}" data-photo-url="${module.photoURL || ''}">Удалить</button>
                 </td>
             `;
         });
     }
 
     // --- Обработчики событий --- 
+
+    // Предпросмотр изображения при выборе файла
+    modulePhotoInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photoPreview.src = e.target.result;
+                photoPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            photoPreview.src = '#';
+            photoPreview.style.display = 'none';
+        }
+    });
 
     // Открытие модального окна установки
     addInstanceBtn.addEventListener('click', () => {
@@ -131,6 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedModuleTypeDisplay.value = ''; // Очищаем отображение
         selectedModuleTypeId.value = ''; // Очищаем ID
         displaySelectedModuleTypeInfo(null); // Скрываем информацию о типе
+        photoPreview.src = '#'; // Сброс превью
+        photoPreview.style.display = 'none';
+        modulePhotoInput.value = ''; // Сброс инпута файла
         loadModuleTypes(); // Загружаем типы для модалки выбора
     });
 
@@ -178,20 +208,46 @@ document.addEventListener('DOMContentLoaded', () => {
     moduleInstanceForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const newModuleInstanceData = {
+        const file = modulePhotoInput.files[0];
+        let photoURL = document.getElementById('photo-preview').src; // Сохраняем старый URL на случай, если фото не меняется
+
+        // Если выбрано новое фото, загружаем его
+        if (file) {
+            const filePath = `module_photos/${Date.now()}_${file.name}`;
+            const fileRef = storage.ref().child(filePath);
+            await fileRef.put(file);
+            photoURL = await fileRef.getDownloadURL();
+
+             // Если это редактирование и было старое фото, удаляем его
+            if (editingModuleInstanceId) {
+                const doc = await db.collection('modules').doc(editingModuleInstanceId).get();
+                const oldPhotoURL = doc.data().photoURL;
+                if (oldPhotoURL) {
+                    try {
+                       const oldPhotoRef = storage.refFromURL(oldPhotoURL);
+                       await oldPhotoRef.delete();
+                    } catch (error) {
+                        console.error("Не удалось удалить старое фото, возможно его уже нет: ", error);
+                    }
+                }
+            }
+        }
+
+        const moduleInstanceData = {
             date: document.getElementById('date').value,
             object: document.getElementById('object').value,
-            moduleTypeId: selectedModuleTypeId.value, // Берем ID из скрытого поля
+            moduleTypeId: selectedModuleTypeId.value,
             screenSize: document.getElementById('screen-size').value,
             orderManager: document.getElementById('order-manager').value,
             maps: document.getElementById('maps').value,
-            note: document.getElementById('note').value
+            note: document.getElementById('note').value,
+            photoURL: (photoURL.startsWith('http')) ? photoURL : null // Сохраняем URL или null
         };
 
         if (editingModuleInstanceId) {
-            await db.collection('modules').doc(editingModuleInstanceId).update(newModuleInstanceData);
+            await db.collection('modules').doc(editingModuleInstanceId).update(moduleInstanceData);
         } else {
-            await db.collection('modules').add(newModuleInstanceData);
+            await db.collection('modules').add(moduleInstanceData);
         }
         
         moduleInstanceModal.style.display = 'none';
@@ -222,13 +278,36 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('maps').value = moduleToEdit.maps || '';
             document.getElementById('note').value = moduleToEdit.note || '';
 
+            // Отображение превью фото при редактировании
+            if (moduleToEdit.photoURL) {
+                photoPreview.src = moduleToEdit.photoURL;
+                photoPreview.style.display = 'block';
+            } else {
+                photoPreview.src = '#';
+                photoPreview.style.display = 'none';
+            }
+            modulePhotoInput.value = ''; // Сбрасываем инпут файла
+
             moduleInstanceModal.style.display = 'block';
             displaySelectedModuleTypeInfo(moduleToEdit.moduleTypeId); // Отображаем информацию о типе
 
         } else if (event.target.classList.contains('delete-instance-btn')) {
             const idToDelete = event.target.dataset.id;
+            const photoURLToDelete = event.target.dataset.photoUrl;
+
             if (confirm('Вы уверены, что хотите удалить эту запись?')) {
+                // Удаляем запись из Firestore
                 await db.collection('modules').doc(idToDelete).delete();
+
+                // Если есть связанное фото, удаляем его из Storage
+                if (photoURLToDelete) {
+                     try {
+                        const photoRef = storage.refFromURL(photoURLToDelete);
+                        await photoRef.delete();
+                     } catch (error) {
+                         console.error("Не удалось удалить фото, возможно его уже нет: ", error);
+                     }
+                }
                 loadModules(); 
             }
         }

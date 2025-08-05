@@ -29,6 +29,7 @@
                         <th>Размер экрана</th>
                         <th>Менеджер заказа</th>
                         <th>Примечание</th>
+                        <th>Фото</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -73,6 +74,10 @@
                 <label for="note">Примечание:</label>
                 <textarea id="note"></textarea>
 
+                <label for="module-photo">Фото:</label>
+                <input type="file" id="module-photo" accept="image/*">
+                <img id="photo-preview" src="#" alt="Предпросмотр фото" style="display: none; max-width: 100px; margin-top: 10px;">
+
                 <button type="submit">Сохранить</button>
             </form>
         </div>
@@ -103,6 +108,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyAnBhHkh9SOIp5LBWenxnDl8AgdCAdd4Bg",
@@ -117,6 +123,7 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
+      const storage = firebase.storage();
     </script>
     <script src="accounting.js"></script>
 </body>
