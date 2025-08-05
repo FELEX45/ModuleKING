@@ -8,10 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const moduleInstanceForm = document.getElementById('module-instance-form');
     const modulesTableBody = document.querySelector('#modules-table tbody');
 
-    // Элементы для фото
-    const modulePhotoInput = document.getElementById('module-photo');
-    const photoPreview = document.getElementById('photo-preview');
-
     // Новые элементы для выбора типа модуля
     const selectedModuleTypeDisplay = document.getElementById('selected-module-type-display');
     const selectedModuleTypeId = document.getElementById('selected-module-type-id');
@@ -133,22 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Обработчики событий --- 
-
-    // Предпросмотр изображения при выборе файла
-    modulePhotoInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                photoPreview.src = e.target.result;
-                photoPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            photoPreview.src = '#';
-            photoPreview.style.display = 'none';
-        }
-    });
 
     // Открытие модального окна установки
     addInstanceBtn.addEventListener('click', () => {
