@@ -107,9 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
         data.forEach(module => {
             const row = modulesTableBody.insertRow();
 
-            // Создаем HTML для фото, если оно есть
-            const photoHtml = module.photoURL 
-                ? `<img src="${module.photoURL}" alt="Фото модуля" style="width: 100px; height: auto; cursor: pointer;" onclick="window.open('${module.photoURL}')">` 
+            // Теперь фото берется из moduleType
+            const photoHtml = module.moduleType.photoURL 
+                ? `<img src="${module.moduleType.photoURL}" alt="Фото модуля" style="width: 100px; height: auto; cursor: pointer;" onclick="window.open('${module.moduleType.photoURL}')">` 
                 : 'Нет фото';
 
             row.innerHTML = `
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${photoHtml}</td>
                 <td>
                     <button class="edit-instance-btn" data-id="${module.id}">Редактировать</button>
-                    <button class="delete-instance-btn" data-id="${module.id}" data-photo-url="${module.photoURL || ''}">Удалить</button>
+                    <button class="delete-instance-btn" data-id="${module.id}">Удалить</button>
                 </td>
             `;
         });
@@ -158,9 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedModuleTypeDisplay.value = ''; // Очищаем отображение
         selectedModuleTypeId.value = ''; // Очищаем ID
         displaySelectedModuleTypeInfo(null); // Скрываем информацию о типе
-        photoPreview.src = '#'; // Сброс превью
-        photoPreview.style.display = 'none';
-        modulePhotoInput.value = ''; // Сброс инпута файла
         loadModuleTypes(); // Загружаем типы для модалки выбора
     });
 
@@ -208,46 +205,22 @@ document.addEventListener('DOMContentLoaded', () => {
     moduleInstanceForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const file = modulePhotoInput.files[0];
-        let photoURL = document.getElementById('photo-preview').src; // Сохраняем старый URL на случай, если фото не меняется
-
-        // Если выбрано новое фото, загружаем его
-        if (file) {
-            const filePath = `module_photos/${Date.now()}_${file.name}`;
-            const fileRef = storage.ref().child(filePath);
-            await fileRef.put(file);
-            photoURL = await fileRef.getDownloadURL();
-
-             // Если это редактирование и было старое фото, удаляем его
-            if (editingModuleInstanceId) {
-                const doc = await db.collection('modules').doc(editingModuleInstanceId).get();
-                const oldPhotoURL = doc.data().photoURL;
-                if (oldPhotoURL) {
-                    try {
-                       const oldPhotoRef = storage.refFromURL(oldPhotoURL);
-                       await oldPhotoRef.delete();
-                    } catch (error) {
-                        console.error("Не удалось удалить старое фото, возможно его уже нет: ", error);
-                    }
-                }
-            }
-        }
-
-        const moduleInstanceData = {
+        // Убираем всю логику с загрузкой фото отсюда
+        const newModuleInstanceData = {
             date: document.getElementById('date').value,
             object: document.getElementById('object').value,
-            moduleTypeId: selectedModuleTypeId.value,
+            moduleTypeId: selectedModuleTypeId.value, // Берем ID из скрытого поля
             screenSize: document.getElementById('screen-size').value,
             orderManager: document.getElementById('order-manager').value,
             maps: document.getElementById('maps').value,
-            note: document.getElementById('note').value,
-            photoURL: (photoURL.startsWith('http')) ? photoURL : null // Сохраняем URL или null
+            note: document.getElementById('note').value
+            // Поле photoURL здесь больше не нужно
         };
 
         if (editingModuleInstanceId) {
-            await db.collection('modules').doc(editingModuleInstanceId).update(moduleInstanceData);
+            await db.collection('modules').doc(editingModuleInstanceId).update(newModuleInstanceData);
         } else {
-            await db.collection('modules').add(moduleInstanceData);
+            await db.collection('modules').add(newModuleInstanceData);
         }
         
         moduleInstanceModal.style.display = 'none';
@@ -278,36 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('maps').value = moduleToEdit.maps || '';
             document.getElementById('note').value = moduleToEdit.note || '';
 
-            // Отображение превью фото при редактировании
-            if (moduleToEdit.photoURL) {
-                photoPreview.src = moduleToEdit.photoURL;
-                photoPreview.style.display = 'block';
-            } else {
-                photoPreview.src = '#';
-                photoPreview.style.display = 'none';
-            }
-            modulePhotoInput.value = ''; // Сбрасываем инпут файла
-
+            // Убираем логику с превью фото
             moduleInstanceModal.style.display = 'block';
             displaySelectedModuleTypeInfo(moduleToEdit.moduleTypeId); // Отображаем информацию о типе
 
         } else if (event.target.classList.contains('delete-instance-btn')) {
             const idToDelete = event.target.dataset.id;
-            const photoURLToDelete = event.target.dataset.photoUrl;
-
             if (confirm('Вы уверены, что хотите удалить эту запись?')) {
-                // Удаляем запись из Firestore
+                // Логику удаления фото отсюда убираем, т.к. фото не привязано к этой записи
                 await db.collection('modules').doc(idToDelete).delete();
-
-                // Если есть связанное фото, удаляем его из Storage
-                if (photoURLToDelete) {
-                     try {
-                        const photoRef = storage.refFromURL(photoURLToDelete);
-                        await photoRef.delete();
-                     } catch (error) {
-                         console.error("Не удалось удалить фото, возможно его уже нет: ", error);
-                     }
-                }
                 loadModules(); 
             }
         }

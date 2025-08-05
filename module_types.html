@@ -21,6 +21,7 @@
                     <th>Производитель</th>
                     <th>Чип/Декодер</th>
                     <th>Полное название</th>
+                    <th>Фото</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -47,6 +48,10 @@
                 <label for="full-name-type">Полное название модуля:</label>
                 <input type="text" id="full-name-type">
 
+                <label for="module-type-photo">Фото:</label>
+                <input type="file" id="module-type-photo" accept="image/*">
+                <img id="photo-type-preview" src="#" alt="Предпросмотр фото" style="display: none; max-width: 100px; margin-top: 10px;">
+
                 <button type="submit">Сохранить тип</button>
             </form>
         </div>
@@ -54,6 +59,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyAnBhHkh9SOIp5LBWenxnDl8AgdCAdd4Bg",
@@ -68,6 +74,7 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
+      const storage = firebase.storage();
     </script>
     <script src="module_types.js"></script>
 </body>
